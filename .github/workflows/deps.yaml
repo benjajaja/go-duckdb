@@ -1,5 +1,6 @@
 name: Build static library dependencies
 on:
+  workflow_dispatch: # self testing manually
   push:
     branches-ignore:
       - master
