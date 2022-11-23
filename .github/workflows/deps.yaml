@@ -47,9 +47,24 @@ jobs:
           name: linux_amd64
           path: deps/linux_amd64/libduckdb.a
           retention-days: 1
+  linux_arm64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - shell: bash
+        run: |
+          sudo apt-get install -qy binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          CXX=aarch64-linux-gnu-g++ AR=aarch64-linux-gnu-ar make deps.linux.arm64
+      - uses: actions/upload-artifact@v3
+        with:
+          name: linux_arm64
+          path: deps/linux_arm64/libduckdb.a
+          retention-days: 1
   commit:
     runs-on: ubuntu-latest
-    needs: [darwin_amd64, darwin_arm64, linux_amd64]
+    needs: [darwin_amd64, darwin_arm64, linux_amd64, linux_arm64]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -58,6 +73,7 @@ jobs:
         run: |
           rm -f deps/darwin_amd64/libduckdb.a
           rm -f deps/darwin_arm64/libduckdb.a
+          rm -f deps/linux_amd64/libduckdb.a
           rm -f deps/linux_arm64/libduckdb.a
       - uses: actions/download-artifact@v3
         with:
@@ -71,6 +87,10 @@ jobs:
         with:
           name: linux_amd64
           path: deps/linux_amd64
+      - uses: actions/download-artifact@v3
+        with:
+          name: linux_arm64
+          path: deps/linux_arm64
       - name: Push static libraries
         uses: stefanzweifel/git-auto-commit-action@v4
         with:

@@ -34,9 +34,10 @@ deps.darwin.arm64:
 	ar rvs libduckdb.a duckdb.o
 	mv libduckdb.a deps/darwin_arm64/libduckdb.a
 
-.PHONY: deps.linux.amd64
-deps.linux.amd64:
+.PHONY: deps.linux.%
+deps.linux.%:
 	if [ "$(shell uname -s | tr '[:upper:]' '[:lower:]')" != "linux" ]; then echo "Error: must run build on linux"; false; fi
-	g++ -std=c++11 -O3 -DGODUCKDB_FROM_SOURCE -c duckdb.cpp
-	ar rvs libduckdb.a duckdb.o
-	mv libduckdb.a deps/linux_amd64/libduckdb.a
+	$(CXX) -std=c++11 -O3 -DGODUCKDB_FROM_SOURCE -c duckdb.cpp
+	$(AR) rvs libduckdb.a duckdb.o
+	mv libduckdb.a deps/linux_$*/libduckdb.a
+
